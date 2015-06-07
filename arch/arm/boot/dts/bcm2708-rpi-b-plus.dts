@@ -79,7 +79,15 @@
 &i2c1 {
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c1_pins>;
-	clock-frequency = <100000>;
+	clock-frequency = <400000>;
+
+	st21nfcb: st21nfcb@0x08 {
+		compatible = "st,st21nfcb_i2c";
+		reg = <0x08>;
+		interrupt-parent = <&gpio>;
+		interrupts = <5 4>;
+		reset-gpios = <&gpio 6 0>;
+	};
 };
 
 &i2s {

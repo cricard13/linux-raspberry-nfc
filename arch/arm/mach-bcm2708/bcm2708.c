@@ -60,6 +60,7 @@
 #include <mach/system.h>
 
 #include <linux/delay.h>
+#include <linux/gpio.h>
 
 #include "bcm2708.h"
 #include "armctrl.h"
@@ -67,6 +68,8 @@
 #ifdef CONFIG_BCM_VC_CMA
 #include <linux/broadcom/vc_cma.h>
 #endif
+
+#include <linux/platform_data/st21nfcb.h>
 
 
 /* Effectively we have an IOMMU (ARM<->VideoCore map) that is set up to
@@ -734,6 +737,20 @@ static struct i2c_board_info __initdata snd_pcm512x_i2c_devices[] = {
 };
 #endif
 
+static struct st21nfcb_nfc_platform_data st21nfcb_pdata = {
+	.gpio_irq = 5,
+	.gpio_reset = 6,
+	.irq_polarity = IRQF_TRIGGER_RISING,
+};
+
+static struct i2c_board_info __initdata st21nfcb_nci_i2c_devices[] = {
+	{
+		I2C_BOARD_INFO(ST21NFCB_NCI_DRIVER_NAME, 0x08),
+		.platform_data = &st21nfcb_pdata,
+	},
+};
+
+
 int __init bcm_register_device(struct platform_device *pdev)
 {
 	int ret;
@@ -867,6 +884,7 @@ void __init bcm2708_init(void)
 	}
 #endif
 
+
 #if defined(CONFIG_W1_MASTER_GPIO) || defined(CONFIG_W1_MASTER_GPIO_MODULE)
 	w1_gpio_pdata.pin = w1_gpio_pin;
 	w1_gpio_pdata.ext_pullup_enable_pin = w1_gpio_pullup;
@@ -898,6 +916,8 @@ void __init bcm2708_init(void)
 	} else {
 		bcm_register_device_dt(&bcm2708_bsc1_device);
 	}
+
+	i2c_register_board_info(1, st21nfcb_nci_i2c_devices, ARRAY_SIZE(st21nfcb_nci_i2c_devices));
 
 #if defined(CONFIG_SND_BCM2708_SOC_I2S) || defined(CONFIG_SND_BCM2708_SOC_I2S_MODULE)
 	bcm_register_device_dt(&bcm2708_i2s_device);
