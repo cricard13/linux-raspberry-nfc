@@ -22,6 +22,7 @@
 #define ST_NCI_DRIVER_NAME "st_nci"
 
 struct st_nci_nfc_platform_data {
+	unsigned int gpio_irq;
 	unsigned int gpio_reset;
 	unsigned int irq_polarity;
 };
