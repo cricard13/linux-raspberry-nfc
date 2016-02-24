@@ -14,25 +14,6 @@
 
 enum acpi_irq_model_id acpi_irq_model;
 
-static unsigned int acpi_gsi_get_irq_type(int trigger, int polarity)
-{
-	switch (polarity) {
-	case ACPI_ACTIVE_LOW:
-		return trigger == ACPI_EDGE_SENSITIVE ?
-		       IRQ_TYPE_EDGE_FALLING :
-		       IRQ_TYPE_LEVEL_LOW;
-	case ACPI_ACTIVE_HIGH:
-		return trigger == ACPI_EDGE_SENSITIVE ?
-		       IRQ_TYPE_EDGE_RISING :
-		       IRQ_TYPE_LEVEL_HIGH;
-	case ACPI_ACTIVE_BOTH:
-		if (trigger == ACPI_EDGE_SENSITIVE)
-			return IRQ_TYPE_EDGE_BOTH;
-	default:
-		return IRQ_TYPE_NONE;
-	}
-}
-
 /**
  * acpi_gsi_to_irq() - Retrieve the linux irq number for a given GSI
  * @gsi: GSI IRQ number to map
@@ -73,7 +54,7 @@ int acpi_register_gsi(struct device *dev, u32 gsi, int trigger,
 		      int polarity)
 {
 	unsigned int irq;
-	unsigned int irq_type = acpi_gsi_get_irq_type(trigger, polarity);
+	unsigned int irq_type = acpi_dev_get_irq_type(trigger, polarity);
 
 	/*
 	 * There is no way at present to look-up the IRQ domain on ACPI,
