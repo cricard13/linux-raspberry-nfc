@@ -1,5 +1,7 @@
 /dts-v1/;
 
+#include <dt-bindings/interrupt-controller/irq.h>
+#include <dt-bindings/gpio/gpio.h>
 /include/ "bcm2709.dtsi"
 
 / {
@@ -80,6 +82,16 @@
 	pinctrl-names = "default";
 	pinctrl-0 = <&i2c1_pins>;
 	clock-frequency = <100000>;
+	status = "okay";
+	st21nfcb: st21nfcb@0x08 {
+		compatible = "st,st21nfcb-i2c";
+		reg = <0x08>;
+		interrupt-parent = <&gpio>;
+		interrupts = <5 IRQ_TYPE_EDGE_RISING>;
+		reset-gpios = <&gpio 6 GPIO_ACTIVE_HIGH>;
+		uicc-present;
+		ese-present;
+	};
 };
 
 &i2c2 {
